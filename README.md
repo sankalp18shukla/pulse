@@ -37,6 +37,19 @@ Then open **http://localhost:8100**.
 
 For more stories with images, get a free key from https://gnews.io/ and add it to `.env` as `GNEWS_API_KEY=...`. The free tier allows 100 requests a day, and Pulse caches results for 10 minutes to stay under that.
 
+## Deploy on Vercel
+
+The repo is ready for Vercel: `api/index.py` exposes the FastAPI app and `vercel.json`
+sends every request to it. Import the GitHub repo in Vercel and deploy; no build
+settings are needed. To use GNews, add `GNEWS_API_KEY` under Project → Settings →
+Environment Variables.
+
+Vercel functions can only write to `/tmp`, so Pulse keeps its database there. That
+storage is temporary: bookmarks, skips and story history are lost whenever Vercel
+recycles the instance (often after some idle time), and two instances don't share it.
+For lasting bookmarks, use a host with a persistent disk (Render, Railway, Fly.io) or
+point Pulse at a hosted database.
+
 ## Sources
 
 Categories: Top stories, India, World, Business, Tech, Science, Sports, Health.

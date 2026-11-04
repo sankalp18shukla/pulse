@@ -253,14 +253,15 @@ function renderDeck() {
   syncBookmark();
 }
 
-function showEmpty(kind = "done") {
+function showEmpty(kind = "done", detail = "") {
   setControls(false);
   const box = el("div", "state");
   const inner = el("div");
   const row = el("div", "row");
   const isToday = state.day === state.today;
   if (kind === "error") {
-    inner.append(el("h2", "", "Couldn't reach the news sources"), el("p", "", "Check your internet connection, then try again."));
+    inner.append(el("h2", "", "Couldn't reach the news sources"),
+      el("p", "", detail || "Check your internet connection, then try again."));
     const b = el("button", "btn solid", "Try again");
     b.onclick = () => loadFeed(true);
     row.append(b);
@@ -537,7 +538,8 @@ async function loadFeed(refresh = false) {
   try {
     const q = new URLSearchParams({ category: state.category, day: state.day, tz: TZ, refresh: refresh ? 1 : 0 });
     const res = await fetch(`/api/feed?${q}`);
-    const data = await res.json();
+    if (!res.ok) throw new Error(`The Pulse server answered ${res.status}${res.status >= 500 ? " (it hit an error — check the server logs)" : ""}.`);
+    const data = await res.json().catch(() => { throw new Error("The Pulse server sent something that isn't JSON. Is the API deployed?"); });
     if (want !== `${state.category}|${state.day}`) return; // user moved on while this loaded
     state.today = data.today || state.today;
     state.oldest = data.oldest || state.oldest;
@@ -547,11 +549,15 @@ async function loadFeed(refresh = false) {
     state.history = [];
     deck.innerHTML = "";
     renderDayNav();
-    if (!data.sources_ok) { showEmpty("error"); $("#remaining").textContent = ""; return; }
+    if (!data.sources_ok) {
+      showEmpty("error", "The server is running but none of the news feeds answered. Try again in a minute.");
+      $("#remaining").textContent = "";
+      return;
+    }
     renderDeck();
-  } catch {
+  } catch (err) {
     deck.innerHTML = "";
-    showEmpty("error");
+    showEmpty("error", err instanceof TypeError ? "" : err.message);
     $("#remaining").textContent = "";
   } finally {
     state.busy = false;

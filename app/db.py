@@ -10,7 +10,10 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
-DB_PATH = os.getenv("PULSE_DB", os.path.join(os.path.dirname(__file__), "..", "pulse.db"))
+# Serverless hosts (Vercel) only allow writing to /tmp, and it is wiped when the
+# instance is recycled. Locally the database sits next to the code.
+_DEFAULT_DB = "/tmp/pulse.db" if os.getenv("VERCEL") else os.path.join(os.path.dirname(__file__), "..", "pulse.db")
+DB_PATH = os.getenv("PULSE_DB", _DEFAULT_DB)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS articles (
