@@ -145,6 +145,18 @@ def reset_skips():
     return {"cleared": db.clear_skips(), **db.stats()}
 
 
+@app.get("/api/health")
+def health():
+    """Quick check for deployments: is the server up and can it use its database?"""
+    try:
+        counts = db.stats()
+        db_ok, error = True, None
+    except Exception as e:  # noqa: BLE001 - report any storage problem as text
+        counts, db_ok, error = {}, False, f"{type(e).__name__}: {e}"
+    return {"ok": db_ok, "db_path": os.path.abspath(db.DB_PATH), "on_vercel": bool(os.getenv("VERCEL")),
+            "db_error": error, **counts}
+
+
 @app.get("/api/stats")
 def stats():
     return db.stats()

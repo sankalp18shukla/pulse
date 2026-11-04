@@ -39,9 +39,10 @@ For more stories with images, get a free key from https://gnews.io/ and add it t
 
 ## Deploy on Vercel
 
-The repo is ready for Vercel: `api/index.py` exposes the FastAPI app and `vercel.json`
-sends every request to it. Import the GitHub repo in Vercel and deploy; no build
-settings are needed. To use GNews, add `GNEWS_API_KEY` under Project → Settings →
+The repo is ready for Vercel. Vercel finds the FastAPI app in `app/main.py` and sends
+every request to it; `vercel.json` only raises the time limit. Import the GitHub repo
+in Vercel and deploy with the default settings (don't add rewrites, they break routing).
+After deploying, open `/api/health` to check the server and its database. To use GNews, add `GNEWS_API_KEY` under Project → Settings →
 Environment Variables.
 
 Vercel functions can only write to `/tmp`, so Pulse keeps its database there. That
