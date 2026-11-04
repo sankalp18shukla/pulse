@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pulse" />
+  <title>Pulse — current affairs, one swipe at a time</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 17h7l3.5-9 6 17 3.5-8H30' fill='none' stroke='%230B0B0C' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/" aria-label="Pulse home">
+        <svg class="logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path d="M2 17h7l3.5-9 6 17 3.5-8H30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="brand-name">Pulse</span>
+      </a>
+
+      <nav class="nav-links" role="tablist" aria-label="View">
+        <button class="nav-link" role="tab" id="tabDiscover" aria-selected="true" aria-controls="discoverView">Discover</button>
+        <button class="nav-link" role="tab" id="tabSaved" aria-selected="false" aria-controls="savedView">Saved <span class="count" id="savedCount">0</span></button>
+      </nav>
+
+      <button class="icon-btn" id="refreshTop" aria-label="Check for new stories" title="Check for new stories">
+        <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app">
+    <section id="discoverView" role="tabpanel" aria-labelledby="tabDiscover">
+      <div class="day-nav" aria-label="Choose a day">
+        <button class="day-step" id="dayPrev" aria-label="Previous day" title="Previous day">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <label class="day-label" title="Pick a date">
+          <span class="day-rel" id="dayRel">Today</span>
+          <span class="day-date" id="dayDate"></span>
+          <span class="day-count" id="dayCount"></span>
+          <input type="date" id="dayInput" aria-label="Pick a date" />
+        </label>
+        <button class="day-step" id="dayNext" aria-label="Next day" title="Next day">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="chips" id="chips" aria-label="Categories"></div>
+
+      <div class="deck-wrap">
+        <div class="deck" id="deck" aria-live="polite"></div>
+      </div>
+
+      <div class="controls">
+        <button class="ctl small" id="undoBtn" aria-label="Undo (Backspace)" title="Undo (Backspace)" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 7H4v5M4.5 11.5A8 8 0 1 1 7 17.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="ctl" id="skipBtn" aria-label="Next story (arrow keys)" title="Next story (← / →)">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="ctl bookmark" id="saveBtn" aria-pressed="false" aria-label="Bookmark story (B)" title="Bookmark (B)">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M7 4h10v16l-5-3.5L7 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="ctl small" id="openBtn" aria-label="Open the full story on the publisher's site" title="Open full story">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <p class="meta-line" id="remaining"></p>
+    </section>
+
+    <section id="savedView" role="tabpanel" aria-labelledby="tabSaved" hidden>
+      <div class="page-head">
+        <h1>Saved</h1>
+        <p id="savedSub">Stories you bookmarked.</p>
+      </div>
+      <ul class="saved-list" id="savedList"></ul>
+    </section>
+  </main>
+
+  <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+    <article class="sheet-panel">
+      <div class="sheet-handle" id="sheetHandle" aria-hidden="true"></div>
+      <button class="sheet-close" id="sheetClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+      <div class="sheet-media" id="sheetMedia"></div>
+      <div class="sheet-body">
+        <p class="sheet-meta" id="sheetMeta"></p>
+        <h2 id="sheetTitle"></h2>
+        <h3 class="sheet-label">Summary</h3>
+        <ul class="sheet-points" id="sheetPoints"></ul>
+        <p class="sheet-note" id="sheetNote"></p>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn" id="sheetBm" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 4h10v16l-5-3.5L7 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span>Bookmark</span>
+        </button>
+        <a class="btn solid" id="sheetOpen" target="_blank" rel="noopener noreferrer">
+          Read full story
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </article>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
